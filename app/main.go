@@ -34,11 +34,24 @@ func main() {
 		receivedData := string(buf[:size])
 		fmt.Printf("Received %d bytes from %s: %s\n", size, source, receivedData)
 
-		response := new(Header)
-		response.ID = 1234
-		response.QR = true
+		responseheader := &Header{
+			ID:      1234,
+			QR:      true,
+			QDCOUNT: 1,
+		}
 
-		_, err = udpConn.WriteToUDP(response.ToBytes(), source)
+		question := &Question{
+			Name:  "codecrafters.io",
+			Type:  int(TypeNameToValue("A")),
+			Class: int(ClassNameToValue("IN")),
+		}
+
+		response := &DNS{
+			Header:   responseheader,
+			Question: question,
+		}
+
+		_, err = udpConn.WriteToUDP(response.Bytes(), source)
 		if err != nil {
 			fmt.Println("Failed to send response:", err)
 		}
