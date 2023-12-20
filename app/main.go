@@ -48,11 +48,12 @@ func main() {
 		}
 
 		answer := &Answer{
-			Name:  "codecrafters.io",
-			Type:  int(TypeNameToValue("A")),
-			Class: int(ClassNameToValue("IN")),
-			TTL:   60,
-			Data:  "8.8.8.8",
+			Name:   "codecrafters.io",
+			Type:   int(TypeNameToValue("A")),
+			Class:  int(ClassNameToValue("IN")),
+			TTL:    60,
+			Length: 4,
+			Data:   "8.8.8.8",
 		}
 
 		response := &DNS{

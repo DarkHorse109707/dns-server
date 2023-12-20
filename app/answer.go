@@ -14,7 +14,7 @@ type Answer struct {
 	TTL   int32
 	Data  string // this is contain the sender ip address
 
-	length int // will be the length of the data
+	Length int // will be the length of the data
 }
 
 func int32ToBytes(i int32) []byte {
@@ -45,7 +45,7 @@ func (a *Answer) Bytes() []byte {
 	typebytes := intToBytes(a.Type)
 	classbytes := intToBytes(a.Class)
 	ttl := int32ToBytes(a.TTL)
-	length := intToBytes(len(a.Data))
+	length := intToBytes(a.Length)
 	data := ParseIP(a.Data)
 
 	res = append(res, name...)
