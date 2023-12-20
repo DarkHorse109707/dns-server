@@ -3,6 +3,7 @@ package main
 type DNS struct {
 	Question *Question
 	Header   *Header
+	Answer   *Answer
 }
 
 func (d *DNS) Bytes() []byte {
