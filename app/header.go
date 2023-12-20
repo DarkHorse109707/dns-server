@@ -1,6 +1,9 @@
 package main
 
-import "encoding/binary"
+import (
+	"encoding/binary"
+	"log"
+)
 
 type Header struct {
 	ID      uint16
@@ -59,4 +62,6 @@ func (h *Header) Parse(data []byte) {
 	h.ANCOUNT = binary.BigEndian.Uint16(data[6:8])
 	h.NSCOUNT = binary.BigEndian.Uint16(data[8:10])
 	h.ARCOUNT = binary.BigEndian.Uint16(data[10:12])
+
+	log.Printf("data: %+v", h)
 }
