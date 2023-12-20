@@ -45,14 +45,14 @@ func (h *Header) Parse(data []byte) {
 
 	// length 2 section
 	h.QR = (data[2]>>7)&1 == 1
-	h.OPCODE = (data[2] >> 3) & 7
+	h.OPCODE = (data[2] >> 3) & 15
 	h.AA = (data[2]>>2)&1 == 1
 	h.TC = (data[2]>>1)&1 == 1
 	h.RD = data[2]&1 == 1
 
 	// length 3 sectio
 	h.RA = (data[3]>>7)&1 == 1
-	h.Z = (data[3] >> 4) & 1
+	h.Z = (data[3] >> 4) & 7
 	h.RCODE = data[3] & 15
 
 	h.QDCOUNT = binary.BigEndian.Uint16(data[4:6])
