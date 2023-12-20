@@ -36,6 +36,7 @@ func main() {
 
 		responseheader := new(Header)
 		responseheader.Parse(buf)
+		responseheader.QR = true
 		responseheader.QDCOUNT = 1
 		responseheader.ANCOUNT = 1
 
