@@ -31,7 +31,7 @@ func main() {
 			break
 		}
 
-		receivedData := string(buf[:size])
+		receivedData := string(buf)
 		fmt.Printf("Received %d bytes from %s: %s\n", size, source, receivedData)
 
 		responseheader := new(Header)
