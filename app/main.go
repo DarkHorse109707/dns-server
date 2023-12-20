@@ -38,6 +38,7 @@ func main() {
 			ID:      1234,
 			QR:      true,
 			QDCOUNT: 1,
+			ANCOUNT: 1,
 		}
 
 		question := &Question{
