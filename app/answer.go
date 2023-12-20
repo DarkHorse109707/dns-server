@@ -2,6 +2,8 @@ package main
 
 import (
 	"encoding/binary"
+	"fmt"
+	"strconv"
 	"strings"
 )
 
@@ -22,14 +24,18 @@ func int32ToBytes(i int32) []byte {
 	return res
 }
 
-func ipSequence(domain string) []byte {
-	labels := strings.Split(domain, ".")
-	var sequence []byte
-	for _, label := range labels {
-		sequence = append(sequence, '\x00')
-		sequence = append(sequence, label...)
+func ParseIP(ip string) []byte {
+	var response []byte
+	elements := strings.Split(ip, ".")
+
+	for _, element := range elements {
+		num, err := strconv.Atoi(element)
+		if err != nil {
+			fmt.Println("Error converting string to int: ", err)
+		}
+		response = append(response, byte(num))
 	}
-	return sequence
+	return response
 }
 
 func (a *Answer) Bytes() []byte {
@@ -40,7 +46,7 @@ func (a *Answer) Bytes() []byte {
 	classbytes := intToBytes(a.Class)
 	ttl := int32ToBytes(a.TTL)
 	length := intToBytes(len(a.Data))
-	data := ipSequence(a.Data)
+	data := ParseIP(a.Data)
 
 	res = append(res, name...)
 	res = append(res, typebytes...)
