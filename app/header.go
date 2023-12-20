@@ -39,3 +39,24 @@ func (h *Header) ToBytes() []byte {
 
 	return val
 }
+
+func (h *Header) Parse(data []byte) {
+	h.ID = binary.BigEndian.Uint16(data[0:2])
+
+	// length 2 section
+	h.QR = (data[2]>>7)&1 == 1
+	h.OPCODE = (data[2] >> 3) & 15
+	h.AA = (data[2]>>2)&1 == 1
+	h.TC = (data[2]>>1)&1 == 1
+	h.RD = data[2]&1 == 1
+
+	// length 3 sectio
+	h.RA = (data[3]>>7)&1 == 1
+	h.Z = (data[3] >> 4) & 7
+	h.RCODE = data[3] & 15
+
+	h.QDCOUNT = binary.BigEndian.Uint16(data[4:6])
+	h.ANCOUNT = binary.BigEndian.Uint16(data[6:8])
+	h.NSCOUNT = binary.BigEndian.Uint16(data[8:10])
+	h.ARCOUNT = binary.BigEndian.Uint16(data[10:12])
+}

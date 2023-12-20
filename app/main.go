@@ -34,12 +34,10 @@ func main() {
 		receivedData := string(buf[:size])
 		fmt.Printf("Received %d bytes from %s: %s\n", size, source, receivedData)
 
-		responseheader := &Header{
-			ID:      1234,
-			QR:      true,
-			QDCOUNT: 1,
-			ANCOUNT: 1,
-		}
+		responseheader := new(Header)
+		responseheader.Parse(buf)
+		responseheader.QDCOUNT = 1
+		responseheader.ANCOUNT = 1
 
 		question := &Question{
 			Name:  "codecrafters.io",
