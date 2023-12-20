@@ -1,6 +1,9 @@
 package main
 
-import "encoding/binary"
+import (
+	"encoding/binary"
+	"strings"
+)
 
 type Answer struct {
 	Name  string
@@ -19,6 +22,16 @@ func int32ToBytes(i int32) []byte {
 	return res
 }
 
+func ipSequence(domain string) []byte {
+	labels := strings.Split(domain, ".")
+	var sequence []byte
+	for _, label := range labels {
+		sequence = append(sequence, '\x00')
+		sequence = append(sequence, label...)
+	}
+	return sequence
+}
+
 func (a *Answer) Bytes() []byte {
 	res := make([]byte, 0)
 
@@ -27,7 +40,7 @@ func (a *Answer) Bytes() []byte {
 	classbytes := intToBytes(a.Class)
 	ttl := int32ToBytes(a.TTL)
 	length := intToBytes(len(a.Data))
-	data := labelSequence(a.Data)
+	data := ipSequence(a.Data)
 
 	res = append(res, name...)
 	res = append(res, typebytes...)
