@@ -31,11 +31,11 @@ func main() {
 			break
 		}
 
-		receivedData := string(buf)
+		receivedData := string(buf[:size])
 		fmt.Printf("Received %d bytes from %s: %s\n", size, source, receivedData)
 
 		responseheader := new(Header)
-		responseheader.Parse(buf)
+		responseheader.Parse(buf[:size])
 		responseheader.QR = true
 		responseheader.QDCOUNT = 1
 		responseheader.ANCOUNT = 1
