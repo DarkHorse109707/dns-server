@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/binary"
-	"log"
 )
 
 type Header struct {
@@ -53,7 +52,7 @@ func (h *Header) Parse(data []byte) {
 	h.TC = (data[2]>>1)&1 == 1
 	h.RD = data[2]&1 == 1
 
-	// length 3 sectio
+	// length 3 section
 	h.RA = (data[3]>>7)&1 == 1
 	h.Z = (data[3] >> 4) & 7
 	RCODE := data[3] & 15
@@ -68,6 +67,4 @@ func (h *Header) Parse(data []byte) {
 	h.ANCOUNT = binary.BigEndian.Uint16(data[6:8])
 	h.NSCOUNT = binary.BigEndian.Uint16(data[8:10])
 	h.ARCOUNT = binary.BigEndian.Uint16(data[10:12])
-
-	log.Printf("data: %+v", h)
 }
