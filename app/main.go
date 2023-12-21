@@ -36,9 +36,6 @@ func main() {
 
 		responseheader := new(Header)
 		responseheader.Parse(buf[:size])
-		responseheader.QR = true
-		responseheader.QDCOUNT = 1
-		responseheader.ANCOUNT = 1
 		// responseheader.RCODE = 4
 
 		question := &Question{
@@ -46,6 +43,9 @@ func main() {
 			Type:  int(TypeNameToValue("A")),
 			Class: int(ClassNameToValue("IN")),
 		}
+		responseheader.QR = true
+		responseheader.QDCOUNT = 1
+		responseheader.ANCOUNT = 1
 
 		answer := &Answer{
 			Name:   "codecrafters.io",

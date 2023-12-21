@@ -47,15 +47,15 @@ func (h *Header) Parse(data []byte) {
 
 	// length 2 section
 	h.QR = (data[2]>>7)&1 == 1
-	h.OPCODE = (data[2] >> 3) & 15
+	h.OPCODE = (data[2] >> 3) & 0b00001111
 	h.AA = (data[2]>>2)&1 == 1
 	h.TC = (data[2]>>1)&1 == 1
 	h.RD = data[2]&1 == 1
 
 	// length 3 section
 	h.RA = (data[3]>>7)&1 == 1
-	h.Z = (data[3] >> 4) & 7
-	RCODE := data[3] & 15
+	h.Z = (data[3] >> 4) & 0b00000111
+	RCODE := data[3] & 0b00001111
 	if RCODE == 0 {
 		RCODE = 0
 	} else {
