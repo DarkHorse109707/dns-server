@@ -56,7 +56,7 @@ func (h *Header) Parse(data []byte) {
 	h.RA = (data[3]>>7)&1 == 1
 	h.Z = (data[3] >> 4) & 0b00000111
 	RCODE := data[3] & 0b00001111
-	if RCODE == 0 {
+	if h.OPCODE == 0 {
 		RCODE = 0
 	} else {
 		RCODE = 4
