@@ -39,7 +39,7 @@ func main() {
 		responseheader.QR = true
 		responseheader.QDCOUNT = 1
 		responseheader.ANCOUNT = 1
-		responseheader.RCODE = 4
+		// responseheader.RCODE = 4
 
 		question := &Question{
 			Name:  "codecrafters.io",
