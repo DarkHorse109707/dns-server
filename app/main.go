@@ -32,23 +32,19 @@ func main() {
 		}
 
 		receivedData := string(buf[:size])
-		fmt.Printf("Received %d bytes from %s: %s\n", size, source, receivedData)
+		fmt.Printf("Received %d bytes from %s: %+v\n", size, source, receivedData)
 
 		responseheader := new(Header)
 		responseheader.Parse(buf[:size])
-		// responseheader.RCODE = 4
 
-		question := &Question{
-			Name:  "codecrafters.io",
-			Type:  int(TypeNameToValue("A")),
-			Class: int(ClassNameToValue("IN")),
-		}
+		question := new(Question)
+		question.Parse(buf[:size])
 		responseheader.QR = true
 		responseheader.QDCOUNT = 1
 		responseheader.ANCOUNT = 1
 
 		answer := &Answer{
-			Name:   "codecrafters.io",
+			Name:   question.Name,
 			Type:   int(TypeNameToValue("A")),
 			Class:  int(ClassNameToValue("IN")),
 			TTL:    60,

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -19,4 +20,14 @@ func TestHeader(t *testing.T) {
 
 	header.RCODE = 4
 	assert.Equal(t, header, newheader)
+}
+
+func TestQuestion(t *testing.T) {
+	q := &Question{
+		Name:  "codecrafters.io",
+		Type:  1,
+		Class: 1,
+	}
+
+	fmt.Println(string(q.ToBytes()))
 }

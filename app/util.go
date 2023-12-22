@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/binary"
 	"fmt"
+	"log"
 	"strconv"
 	"strings"
 )
@@ -91,6 +92,36 @@ func labelSequence(domain string) []byte {
 	}
 	sequence = append(sequence, '\x00')
 	return sequence
+}
+
+func parseDomainName(data []byte) (string, int) {
+	var (
+		nameparts = make([]string, 0)
+		offset    = 0
+	)
+
+	for {
+		if offset >= len(data) {
+			return "", 0
+		}
+
+		length := int(data[offset])
+		if length == 0 {
+			break
+		}
+		offset++
+
+		if offset+length > len(data) {
+			return "", 0
+		}
+
+		nameparts = append(nameparts, string(data[offset:offset+length]))
+		offset += length
+	}
+
+	log.Println(nameparts)
+
+	return strings.Join(nameparts, "."), 12 + offset + 1
 }
 
 func intToBytes(n int) []byte {
