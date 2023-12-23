@@ -1,9 +1,9 @@
 package main
 
 import (
+	"bytes"
 	"encoding/binary"
 	"fmt"
-	"log"
 	"strconv"
 	"strings"
 )
@@ -94,34 +94,35 @@ func labelSequence(domain string) []byte {
 	return sequence
 }
 
+// this function return the domain name and the offset of the next byte
 func parseDomainName(data []byte) (string, int) {
 	var (
-		nameparts = make([]string, 0)
-		offset    = 0
+		buf    = new(bytes.Buffer)
+		res    = new(strings.Builder)
+		length = data[0]
+		offset = 0
 	)
 
-	for {
-		if offset >= len(data) {
-			return "", 0
-		}
-
-		length := int(data[offset])
-		if length == 0 {
+	for length > 0 && length < byte(len(data)) {
+		if length == 0x00 {
+			// end of domain
 			break
 		}
-		offset++
 
-		if offset+length > len(data) {
-			return "", 0
+		if res.Len() > 1 {
+			res.WriteByte('.')
 		}
 
-		nameparts = append(nameparts, string(data[offset:offset+length]))
-		offset += length
+		buf.Reset()
+		buf.Write(data[byte(offset)+1 : length+byte(offset)+1])
+		res.Write(buf.Bytes())
+
+		offset += int(length) + 1
+
+		length = data[offset]
 	}
 
-	log.Println(nameparts)
-
-	return strings.Join(nameparts, "."), 12 + offset + 1
+	return res.String(), offset + 1 + 12
 }
 
 func intToBytes(n int) []byte {
@@ -130,4 +131,8 @@ func intToBytes(n int) []byte {
 	binary.BigEndian.PutUint16(val, uint16(n))
 
 	return val
+}
+
+func toBytes(s string) []byte {
+	return []byte(s)
 }

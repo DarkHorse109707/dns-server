@@ -31,8 +31,8 @@ func main() {
 			break
 		}
 
-		receivedData := string(buf[:size])
-		fmt.Printf("Received %d bytes from %s: %+v\n", size, source, receivedData)
+		// receivedData := string(buf[:size])
+		fmt.Printf("Received %d bytes from %s: %+v\n", size, source, buf)
 
 		responseheader := new(Header)
 		responseheader.Parse(buf[:size])
@@ -45,8 +45,8 @@ func main() {
 
 		answer := &Answer{
 			Name:   question.Name,
-			Type:   int(TypeNameToValue("A")),
-			Class:  int(ClassNameToValue("IN")),
+			Type:   question.Type,
+			Class:  question.Class,
 			TTL:    60,
 			Length: 4,
 			Data:   "8.8.8.8",
