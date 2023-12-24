@@ -137,7 +137,7 @@ func parseDomainName(data []byte, offset int) (string, int) {
 		offset += length
 	}
 
-	return res.String(), offset
+	return res.String(), offset + 12
 }
 
 func intToBytes(n int) []byte {
