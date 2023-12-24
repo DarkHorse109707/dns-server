@@ -29,8 +29,8 @@ func (q *Question) Parse(data []byte) {
 	var offset int
 
 	// log.Println("data: ", string(data[12:]))
-	q.Name, offset = parseDomainName(data[12:])
-	log.Println(offset)
+	q.Name, offset = parseDomainName(data[12:], 0)
+	log.Println("name: ", q.Name, "offset: ", offset)
 
 	q.Type = int(binary.BigEndian.Uint16(data[offset : offset+2]))
 	q.Class = int(binary.BigEndian.Uint16(data[offset+2 : offset+4]))

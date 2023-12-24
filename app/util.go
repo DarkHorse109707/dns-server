@@ -1,9 +1,9 @@
 package main
 
 import (
-	"bytes"
 	"encoding/binary"
 	"fmt"
+	"log"
 	"strconv"
 	"strings"
 )
@@ -95,34 +95,49 @@ func labelSequence(domain string) []byte {
 }
 
 // this function return the domain name and the offset of the next byte
-func parseDomainName(data []byte) (string, int) {
-	var (
-		buf    = new(bytes.Buffer)
-		res    = new(strings.Builder)
-		length = data[0]
-		offset = 0
-	)
+func parseDomainName(data []byte, offset int) (string, int) {
+	var res strings.Builder
 
-	for length > 0 && length < byte(len(data)) {
-		if length == 0x00 {
-			// end of domain
+	log.Println("data: ", data, "data length: ", len(data), "offset: ", offset)
+
+	// WARN: so far we know we encounter problem with wrong pointer.
+	// the wrong "pointer" here's mean it's pointing into the wrong index.
+	// pointer offset extracting seems being the cause.
+	for {
+		length := int(data[offset])
+		log.Println("length: ", length)
+		offset++
+
+		if offset >= len(data) {
 			break
 		}
 
-		if res.Len() > 1 {
+		if length == 0 {
+			break // end of domain
+		}
+
+		if length >= 192 { // Pointer encountered
+			log.Println("offset: ", offset)
+			pointerOffset := ((int(data[offset-1]) & 0x3F) << 8) | int(data[offset])
+			log.Println("pointerOffset: ", pointerOffset)
+
+			subdomain, _ := parseDomainName(data, pointerOffset)
+			log.Println("subdomain: ", subdomain)
+			res.WriteString(subdomain)
+			offset += 2
+			break
+		}
+
+		if res.Len() > 0 {
 			res.WriteByte('.')
 		}
 
-		buf.Reset()
-		buf.Write(data[byte(offset)+1 : length+byte(offset)+1])
-		res.Write(buf.Bytes())
-
-		offset += int(length) + 1
-
-		length = data[offset]
+		label := data[offset : offset+length]
+		res.Write(label)
+		offset += length
 	}
 
-	return res.String(), offset + 1 + 12
+	return res.String(), offset
 }
 
 func intToBytes(n int) []byte {
