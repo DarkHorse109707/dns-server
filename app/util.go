@@ -98,6 +98,8 @@ func labelSequence(domain string) []byte {
 func parseDomainName(data []byte, offset int) (string, int) {
 	var res strings.Builder
 
+	log.Println("data: ", data, "data length: ", len(data), "offset: ", offset)
+
 	for {
 		log.Println("offset: ", offset)
 		length := int(data[offset])
