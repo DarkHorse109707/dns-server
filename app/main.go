@@ -32,7 +32,7 @@ func main() {
 			break
 		}
 
-		// fmt.Printf("Received %d bytes from %s: %+v\n", size, source, buf)
+		fmt.Printf("Received %d bytes from %s: %+v\n", size, source, buf)
 
 		response := NewDNS(buf[:size])
 
