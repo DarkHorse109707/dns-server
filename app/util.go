@@ -108,23 +108,23 @@ func parseDomainName(data []byte, offset int) (string, int) {
 		log.Println("length: ", length)
 		offset++
 
-		if offset >= len(data) {
+		if length == 0 {
 			break
 		}
 
-		if length == 0 {
-			break // end of domain
-		}
+		// if length >= 192 {
+		// 	// pointerOffset := ((int(data[offset-1]) & 0x3F) << 8) + int(data[offset])
+		// 	pointerOffset := int(data[offset-1] & 0x3f)
+		// 	log.Println("pointerOffset: ", pointerOffset)
+		//
+		// 	subdomain, _ := parseDomainName(data, pointerOffset)
+		//
+		// 	res.WriteString(subdomain)
+		// 	offset++
+		// 	break
+		// }
 
-		if length >= 192 { // Pointer encountered
-			log.Println("offset: ", offset)
-			pointerOffset := ((int(data[offset-1]) & 0x3F) << 8) | int(data[offset])
-			log.Println("pointerOffset: ", pointerOffset)
-
-			subdomain, _ := parseDomainName(data, pointerOffset)
-			log.Println("subdomain: ", subdomain)
-			res.WriteString(subdomain)
-			offset += 2
+		if offset >= len(data) {
 			break
 		}
 

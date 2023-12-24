@@ -34,33 +34,31 @@ func TestQuestion(t *testing.T) {
 }
 
 func TestCompressionMessageQuestion(t *testing.T) {
-	// question := []byte{
-	// 	0x07, 'e', 'x', 'a', 'm', 'p', 'l', 'e',
-	// 	0x03, 'c', 'o', 'm',
-	// 	0xC0, 0x0C, // Compression pointer to the position 12 (where 'example.com' starts)
-	// 	0x00, 0x01, // QTYPE (A)
-	// 	0x00, 0x01, // QCLASS (IN)
-	// }
+	// Combine header and question
+	question := []byte{
+		// DNS Header (truncated for brevity)
+		0xAB, 0xCD, // ID (16 bits)
+		0x01, 0x00, // Flags (QR = 0, Opcode = 0, AA = 0, TC = 0, RD = 1, RA = 0, Z = 0, RCODE = 0)
+		0x00, 0x01, // QDCount (1 question)
+		0x00, 0x00, // ANCount (0 answers)
+		0x00, 0x00, // NSCount (0 authority records)
+		0x00, 0x00, // ARCount (0 additional records)
 
-	// question := []byte{
-	// 	// Labels for the subdomain "sub"
-	// 	0x03, 's', 'u', 'b',
-	//
-	// 	// Labels for the domain "example.com"
-	// 	0x07, 'e', 'x', 'a', 'm', 'p', 'l', 'e',
-	// 	0x03, 'c', 'o', 'm',
-	//
-	// 	// Compression pointer to the position after "example.com"
-	// 	0xC0, 0x0B, // Assuming "example.com" starts at position 11 (0-indexed)
-	//
-	// 	0x00, 0x01, // QTYPE (A)
-	// 	0x00, 0x01, // QCLASS (IN)
-	// }
+		// DNS Question
+		0x07, 'e', 'x', 'a', 'm', 'p', 'l', 'e',
+		0x03, 'c', 'o', 'm',
+		0xC8, 0x0C, // Compression pointer to the position where 'example.com' starts
 
-	question := []byte{156, 123, 1, 0, 0, 2, 0, 0, 0, 0, 0, 0, 3, 97, 98, 99, 17, 108, 111, 110, 103, 97, 115, 115, 100, 111, 109, 97, 105, 110, 110, 97, 109, 101, 3, 99, 111, 109, 0, 0, 1, 0, 1, 3, 100, 101, 102, 192, 16, 0, 1, 0, 1}
+		0x00, 0x01, // QTYPE (A)
+		0x00, 0x01, // QCLASS (IN)
+	}
+	// question = question[12:]
+	// log.Println("this is bitwise operation of 222: ", 0xDE&0x3F)
 
+	quest := new(Question)
+	quest.Parse(question)
 	labels, offset := parseDomainName(question[12:], 0)
+	log.Println("labels: ", labels, "offset: ", offset)
 
-	log.Println(offset)
-	log.Println(labels)
+	log.Printf("quest: %+v", quest)
 }
