@@ -44,6 +44,7 @@ func NewDNS(data []byte) *DNS {
 	}
 
 	header.ANCOUNT = uint16(len(answers))
+	header.QR = true
 	return &DNS{
 		Question: questions,
 		Header:   header,
