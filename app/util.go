@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/binary"
 	"fmt"
-	"log"
 	"strconv"
 	"strings"
 )
@@ -98,18 +97,13 @@ func labelSequence(domain string) []byte {
 func parseDomainName(data []byte, offset int) (string, int) {
 	var res strings.Builder
 
-	log.Println("data: ", data, "data length: ", len(data), "offset: ", offset)
-
 	for {
-		log.Println("offset: ", offset)
 		length := int(data[offset])
 		offset++
-		log.Println("length: ", length)
 
 		if length >= 192 {
 			// pointerOffset := ((int(data[offset-1]) & 0x3F) << 8) + int(data[offset])
 			pointerOffset := int(binary.BigEndian.Uint16(data[offset:offset+2])&0x3f) + 12
-			log.Println("pointerOffset: ", pointerOffset)
 
 			subdomain, _ := parseDomainName(data, pointerOffset)
 
