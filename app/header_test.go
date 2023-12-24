@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"log"
 	"testing"
@@ -33,32 +34,50 @@ func TestQuestion(t *testing.T) {
 	fmt.Println(string(q.ToBytes()))
 }
 
+func createTestDNSPacket() []byte {
+	var buf bytes.Buffer
+
+	// Header
+	buf.Write([]byte{0x00, 0x01}) // ID
+	buf.Write([]byte{0x01, 0x00}) // Flags
+	buf.Write([]byte{0x00, 0x02}) // QDCOUNT
+	buf.Write([]byte{0x00, 0x00}) // ANCOUNT
+	buf.Write([]byte{0x00, 0x00}) // NSCOUNT
+	buf.Write([]byte{0x00, 0x00}) // ARCOUNT
+
+	// Question 1: abc.longassdomainname.com
+	buf.Write([]byte{0x03}) // Length of "abc"
+	buf.WriteString("abc")
+	buf.Write([]byte{0x11}) // Length of "longassdomainname"
+	buf.WriteString("longassdomainname")
+	buf.Write([]byte{0x03}) // Length of "com"
+	buf.WriteString("com")
+	buf.Write([]byte{0x00})       // Null terminator
+	buf.Write([]byte{0x00, 0x01}) // QTYPE
+	buf.Write([]byte{0x00, 0x01}) // QCLASS
+
+	// Question 2: def.longassdomainname.com
+	buf.Write([]byte{0x03}) // Length of "def"
+	buf.WriteString("def")
+	buf.Write([]byte{0x11}) // Length of "longassdomainname"
+	buf.WriteString("longassdomainname")
+	buf.Write([]byte{0x03}) // Length of "com"
+	buf.WriteString("com")
+	buf.Write([]byte{0x00})       // Null terminator
+	buf.Write([]byte{0x00, 0x01}) // QTYPE
+	buf.Write([]byte{0x00, 0x01}) // QCLASS
+
+	return buf.Bytes()
+}
+
 func TestCompressionMessageQuestion(t *testing.T) {
-	// Combine header and question
-	question := []byte{
-		// DNS Header (truncated for brevity)
-		0xAB, 0xCD, // ID (16 bits)
-		0x01, 0x00, // Flags (QR = 0, Opcode = 0, AA = 0, TC = 0, RD = 1, RA = 0, Z = 0, RCODE = 0)
-		0x00, 0x01, // QDCount (1 question)
-		0x00, 0x00, // ANCount (0 answers)
-		0x00, 0x00, // NSCount (0 authority records)
-		0x00, 0x00, // ARCount (0 additional records)
+	question := createTestDNSPacket()
 
-		// DNS Question
-		0x07, 'e', 'x', 'a', 'm', 'p', 'l', 'e',
-		0x03, 'c', 'o', 'm',
-		0xC8, 0x0C, // Compression pointer to the position where 'example.com' starts
+	dns := NewDNS(question)
 
-		0x00, 0x01, // QTYPE (A)
-		0x00, 0x01, // QCLASS (IN)
+	log.Printf("dns: %+v\n", dns)
+
+	for _, v := range dns.Question {
+		log.Printf("question: %+v\n", v)
 	}
-	// question = question[12:]
-	// log.Println("this is bitwise operation of 222: ", 0xDE&0x3F)
-
-	quest := new(Question)
-	quest.Parse(question)
-	labels, offset := parseDomainName(question[12:], 0)
-	log.Println("labels: ", labels, "offset: ", offset)
-
-	log.Printf("quest: %+v", quest)
 }

@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/binary"
 	"fmt"
-	"log"
 	"strconv"
 	"strings"
 )
@@ -98,37 +97,26 @@ func labelSequence(domain string) []byte {
 func parseDomainName(data []byte, offset int) (string, int) {
 	var res strings.Builder
 
-	log.Println("data: ", data, "data length: ", len(data), "offset: ", offset)
-
-	// WARN: so far we know we encounter problem with wrong pointer.
-	// the wrong "pointer" here's mean it's pointing into the wrong index.
-	// pointer offset extracting seems being the cause.
 	for {
 		length := int(data[offset])
-		log.Println("length: ", length)
 		offset++
 
-		if length == 0 {
+		if length >= 192 {
+			// pointerOffset := ((int(data[offset-1]) & 0x3F) << 8) + int(data[offset])
+			pointerOffset := int(binary.BigEndian.Uint16(data[offset:offset+2]) & 0x3f)
+
+			subdomain, _ := parseDomainName(data, pointerOffset)
+
+			res.WriteString(subdomain)
+			offset++
 			break
 		}
 
-		// if length >= 192 {
-		// 	// pointerOffset := ((int(data[offset-1]) & 0x3F) << 8) + int(data[offset])
-		// 	pointerOffset := int(data[offset-1] & 0x3f)
-		// 	log.Println("pointerOffset: ", pointerOffset)
-		//
-		// 	subdomain, _ := parseDomainName(data, pointerOffset)
-		//
-		// 	res.WriteString(subdomain)
-		// 	offset++
-		// 	break
-		// }
-
-		if offset >= len(data) {
+		if offset >= len(data) || length == 0 {
 			break
 		}
 
-		if res.Len() > 0 {
+		if res.Len() > 0 && length > 1 {
 			res.WriteByte('.')
 		}
 
@@ -137,7 +125,7 @@ func parseDomainName(data []byte, offset int) (string, int) {
 		offset += length
 	}
 
-	return res.String(), offset + 12
+	return res.String(), offset
 }
 
 func intToBytes(n int) []byte {

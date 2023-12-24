@@ -37,3 +37,16 @@ func (q *Question) Parse(data []byte) {
 
 	log.Printf("QUESTION: %+v\n", q)
 }
+
+func NewQuestion(data []byte, offset int) (*Question, int) {
+	q := new(Question)
+
+	q.Name, offset = parseDomainName(data, offset)
+
+	q.Type = int(binary.BigEndian.Uint16(data[offset : offset+2]))
+	q.Class = int(binary.BigEndian.Uint16(data[offset+2 : offset+4]))
+
+	offset += 4
+
+	return q, offset
+}

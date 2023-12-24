@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net"
 	// Uncomment this block to pass the first stage
 )
@@ -31,32 +32,11 @@ func main() {
 			break
 		}
 
-		// receivedData := string(buf[:size])
 		fmt.Printf("Received %d bytes from %s: %+v\n", size, source, buf)
 
-		responseheader := new(Header)
-		responseheader.Parse(buf[:size])
+		response := NewDNS(buf[:size])
 
-		question := new(Question)
-		question.Parse(buf[:size])
-		responseheader.QR = true
-		responseheader.QDCOUNT = 1
-		responseheader.ANCOUNT = 1
-
-		answer := &Answer{
-			Name:   question.Name,
-			Type:   question.Type,
-			Class:  question.Class,
-			TTL:    60,
-			Length: 4,
-			Data:   "8.8.8.8",
-		}
-
-		response := &DNS{
-			Header:   responseheader,
-			Question: question,
-			Answer:   answer,
-		}
+		log.Printf("dns: %+v\n", response.Answer)
 
 		_, err = udpConn.WriteToUDP(response.Bytes(), source)
 		if err != nil {
