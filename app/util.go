@@ -22,6 +22,7 @@ func ParseIP(ip string) []byte {
 		num, err := strconv.Atoi(element)
 		if err != nil {
 			fmt.Println("Error converting string to int: ", err)
+			return []byte{}
 		}
 		response = append(response, byte(num))
 	}
@@ -138,4 +139,10 @@ func intToBytes(n int) []byte {
 
 func toBytes(s string) []byte {
 	return []byte(s)
+}
+
+func GetIPLength(ip string) int {
+	processed_ip := strings.ReplaceAll(ip, ".", "")
+
+	return len(processed_ip)
 }

@@ -1,5 +1,10 @@
 package main
 
+import (
+	"log"
+	"net"
+)
+
 type DNS struct {
 	Question []*Question
 	Header   *Header
@@ -22,9 +27,12 @@ func (d *DNS) Bytes() []byte {
 	return res
 }
 
-func NewDNS(data []byte) *DNS {
+func NewDNS(data []byte, resolver string) *DNS {
 	header := new(Header)
 	header.Parse(data[:12])
+
+	ipresolver := net.ParseIP(resolver)
+	log.Printf("ipresolver: %+v\n", ipresolver)
 
 	questions := make([]*Question, 0, header.QDCOUNT)
 	answers := make([]*Answer, 0, header.QDCOUNT)
@@ -33,14 +41,17 @@ func NewDNS(data []byte) *DNS {
 		var q *Question
 		q, n = NewQuestion(data, n)
 		questions = append(questions, q)
-		answers = append(answers, &Answer{
+
+		ans := &Answer{
 			Name:   q.Name,
 			Type:   q.Type,
 			Class:  q.Class,
 			TTL:    60,
 			Length: 4,
 			Data:   "8.8.8.8",
-		})
+		}
+
+		answers = append(answers, ans)
 	}
 
 	header.ANCOUNT = uint16(len(answers))

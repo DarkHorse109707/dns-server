@@ -1,14 +1,26 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"net"
 	// Uncomment this block to pass the first stage
 )
 
+var resolverAddress string
+
 func main() {
 	// You can use print statements as follows for debugging, they'll be visible when running tests.
+
+	flag.StringVar(&resolverAddress, "resolver", "127.0.0.1:2053", "The address of the resolver")
+	flag.Parse()
+
+	log.Printf("Forwarding dns server to %s\n", resolverAddress)
+	serialize, err := NewResolver(resolverAddress)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
 
 	udpAddr, err := net.ResolveUDPAddr("udp", "127.0.0.1:2053")
 	if err != nil {
@@ -32,13 +44,14 @@ func main() {
 			break
 		}
 
-		fmt.Printf("Received %d bytes from %s: %+v\n", size, source, buf)
+		response := NewDNS(buf[:size], resolverAddress)
+		ans, err := serialize.Serialize(response)
+		if err != nil {
+			log.Println(err.Error())
+			continue
+		}
 
-		response := NewDNS(buf[:size])
-
-		log.Printf("dns: %+v\n", response.Answer)
-
-		_, err = udpConn.WriteToUDP(response.Bytes(), source)
+		_, err = udpConn.WriteToUDP(ans.Bytes(), source)
 		if err != nil {
 			fmt.Println("Failed to send response:", err)
 		}

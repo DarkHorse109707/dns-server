@@ -73,7 +73,7 @@ func createTestDNSPacket() []byte {
 func TestCompressionMessageQuestion(t *testing.T) {
 	question := createTestDNSPacket()
 
-	dns := NewDNS(question)
+	dns := NewDNS(question, "8.8.8.8:53")
 
 	log.Printf("dns: %+v\n", dns)
 
