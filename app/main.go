@@ -13,11 +13,11 @@ var resolverAddress string
 func main() {
 	// You can use print statements as follows for debugging, they'll be visible when running tests.
 
-	flag.StringVar(&resolverAddress, "resolver", "127.0.0.1:2053", "The address of the resolver")
+	flag.StringVar(&resolverAddress, "resolver", "", "The address of the resolver")
 	flag.Parse()
 
 	log.Printf("Forwarding dns server to %s\n", resolverAddress)
-	serialize, err := NewResolver(resolverAddress)
+	resolver, err := NewResolver(resolverAddress)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -44,11 +44,16 @@ func main() {
 			break
 		}
 
-		response := NewDNS(buf[:size], resolverAddress)
-		ans, err := serialize.Serialize(response)
-		if err != nil {
-			log.Println(err.Error())
-			continue
+		// TODO: if resolver flag weren't empty, use local resolver instead.
+		ans := NewDNS(buf[:size], resolverAddress)
+
+		// resolver.
+		if resolverAddress != "" {
+			ans, err = resolver.Serialize(ans)
+			if err != nil {
+				log.Println(err.Error())
+				continue
+			}
 		}
 
 		_, err = udpConn.WriteToUDP(ans.Bytes(), source)

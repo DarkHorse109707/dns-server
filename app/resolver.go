@@ -34,8 +34,6 @@ func NewResolver(resolver string) (*Resolver, error) {
 func (r *Resolver) Serialize(dns *DNS) (*DNS, error) {
 	res := new(DNS)
 	res.Header = dns.Header
-	res.Question = dns.Question
-
 	for _, q := range dns.Question {
 		dnsresolver := MessageSerialize(dns.Header, q)
 
@@ -50,9 +48,7 @@ func (r *Resolver) Serialize(dns *DNS) (*DNS, error) {
 			return nil, err
 		}
 
-		dnsresolver = NewDNS(buf[:n], "8.8.8.8")
-
-		res.Answer = append(res.Answer, dnsresolver.Answer...)
+		dns = NewDNS(buf[:n], "8.8.8.8")
 	}
 
 	return res, nil
