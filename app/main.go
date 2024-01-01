@@ -13,7 +13,7 @@ var resolverAddress string
 func main() {
 	// You can use print statements as follows for debugging, they'll be visible when running tests.
 
-	flag.StringVar(&resolverAddress, "resolver", "", "The address of the resolver")
+	flag.StringVar(&resolverAddress, "resolver", "127.0.0.1:2053", "The address of the resolver")
 	flag.Parse()
 
 	log.Printf("Forwarding dns server to %s\n", resolverAddress)
