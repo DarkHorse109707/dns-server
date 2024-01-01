@@ -59,7 +59,7 @@ func (r *Resolver) write(msg []byte) (int, error) {
 		return 0, err
 	}
 
-	return r.Conn.WriteToUDP(msg, r.UDPAddr)
+	return r.Conn.Write(msg)
 }
 
 func (r *Resolver) read(buf []byte) (int, *net.UDPAddr, error) {
